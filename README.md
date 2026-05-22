@@ -62,6 +62,19 @@ To run the automated test suite (uses an in-memory SQLite database):
 php artisan test
 ```
 
+## Seeder / Demo Data
+
+Untuk mempermudah testing dan demo, Anda dapat menjalankan seeder untuk mengisi database dengan sample data.
+
+Contoh command:
+```bash
+php artisan migrate:fresh --seed
+```
+
+Seeder akan membuat:
+- 2 User (`owner@example.com` dan `user@example.com`) dengan password `password123`.
+- Beberapa sample produk dengan data e-commerce yang realistis terhubung ke user tersebut.
+
 ## API Documentation
 
 All API endpoints start with `/api/v1`.

@@ -17,11 +17,17 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $products = [
+            'Mechanical Keyboard', 'Wireless Mouse', 'Gaming Monitor',
+            'Laptop Stand', 'USB-C Hub', 'Noise Cancelling Headphones',
+            'Webcam 1080p', 'Microphone', 'Desk Mat', 'Ergonomic Chair'
+        ];
+
         return [
             'user_id' => \App\Models\User::factory(),
-            'name' => fake()->words(3, true),
-            'description' => fake()->sentence(),
-            'price' => fake()->randomFloat(2, 10, 1000),
+            'name' => fake()->randomElement($products) . ' ' . fake()->word(),
+            'description' => fake()->paragraph(),
+            'price' => fake()->randomFloat(2, 10, 500),
         ];
     }
 }
