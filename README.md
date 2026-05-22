@@ -1,104 +1,130 @@
 # Laravel JWT Product Management API
 
-A robust REST API for product management with JWT authentication, built as a technical assessment backend project.
+REST API yang kokoh dan aman untuk pengelolaan produk dengan autentikasi JWT (JSON Web Token), dibangun menggunakan Laravel 11 sebagai bagian dari technical assessment Divisi Backend Developer 180DC UNAIR.
 
-## Features
+---
 
-- **JWT Authentication**: Secure stateless authentication using `tymon/jwt-auth`.
-- **Product Management**: Full CRUD operations for products.
-- **Authorization**: Users can only update or delete their own products (Laravel Policies).
-- **Advanced Queries**: Pagination, search by name, and sorting by price/name/date.
-- **Standardized Responses**: Consistent JSON response format for success and errors.
-- **Automated Testing**: Comprehensive Feature testing using PHPUnit.
-- **Lightweight UI**: A simple Blade + Vanilla JS interface to demo the API (`/` and `/dashboard`).
+## 🚀 Fitur Utama
 
-## Tech Stack
+- **Autentikasi JWT**: Sistem keamanan *stateless* menggunakan package `tymon/jwt-auth`. Pengguna mendapatkan token akses setelah registrasi atau login.
+- **Pengelolaan Produk (CRUD)**: Hak akses penuh untuk membuat, membaca, memperbarui (secara parsial dengan `PATCH`), dan menghapus produk.
+- **Kebijakan Otorisasi (Laravel Policies)**: Fitur keamanan ketat di mana pengguna hanya diizinkan untuk memperbarui atau menghapus produk yang mereka miliki sendiri (`ProductPolicy`).
+- **Advanced Queries**: Mendukung pencarian dinamis berdasarkan nama produk, pengurutan fleksibel (berdasarkan harga, nama, atau tanggal), dan paginasi otomatis.
+- **Standardisasi API Response**: Seluruh response (sukses maupun error seperti validasi 422, unauthenticated 401, dan unauthorized 403) menggunakan amplop JSON yang konsisten lewat `ApiResponse` Trait.
+- **Automated Testing**: Dilengkapi dengan **23 skenario Feature Testing** menggunakan PHPUnit untuk menjamin keandalan sistem tanpa regresi.
+- **Visualisasi Blade (Bonus)**: Demo UI ringan berbasis Laravel Blade + Vanilla JS `fetch()` untuk mendemonstrasikan konsumsi API secara *stateless* tanpa session.
+
+---
+
+## 🛠️ Stack Teknologi
 
 - **Framework**: Laravel 11
-- **Database**: SQLite
-- **Authentication**: `tymon/jwt-auth`
-- **Testing**: PHPUnit
+- **Database**: SQLite (ringan, portabel, tanpa konfigurasi server tambahan)
+- **Autentikasi**: `tymon/jwt-auth`
+- **Unit & Feature Testing**: PHPUnit (dengan In-Memory SQLite `:memory:` untuk eksekusi super cepat)
 
-## Requirements
+---
 
-- PHP 8.2+
-- Composer
-- Node.js (Optional, not required since we don't use frontend build tools here)
+## 📋 Kebutuhan Sistem
 
-## Installation
+- PHP 8.2 atau versi lebih tinggi
+- Composer (Dependency Manager untuk PHP)
+- Node.js (Opsional, tidak wajib karena tidak menggunakan compiler frontend berat)
 
-1. **Clone the repository** (if not already done).
-2. **Install dependencies**:
+---
+
+## ⚙️ Panduan Instalasi (Langkah Demi Langkah)
+
+Ikuti langkah-langkah di bawah ini untuk menjalankan project di lokal komputer Anda dari awal:
+
+1. **Clone repositori** ini ke komputer lokal Anda.
+2. **Masuk ke direktori project** lalu instal seluruh dependensi PHP menggunakan Composer:
    ```bash
    composer install
    ```
-3. **Copy `.env`**:
+3. **Salin file konfigurasi lingkungan**:
    ```bash
    cp .env.example .env
    ```
-4. **Generate Application Key**:
+4. **Buat Application Key** bawaan Laravel:
    ```bash
    php artisan key:generate
    ```
-5. **Generate JWT Secret**:
+5. **Buat JWT Secret Key** untuk menandatangani token keamanan JWT:
    ```bash
    php artisan jwt:secret
    ```
-6. **Run Migrations**:
+6. **Jalankan Migrasi Database** (pilih 'Yes' jika Laravel meminta pembuatan database SQLite secara otomatis):
    ```bash
    php artisan migrate
    ```
-   *(Say yes if it asks to create the SQLite database)*
-7. **Run the local server**:
+7. **Jalankan Server Lokal**:
    ```bash
    php artisan serve
    ```
+   Aplikasi Anda kini berjalan dan dapat diakses di: **`http://localhost:8000`**
 
-## Running Tests
+---
 
-To run the automated test suite (uses an in-memory SQLite database):
+## 🧪 Cara Menjalankan Automated Testing
+
+Untuk menguji seluruh fungsionalitas backend secara otomatis menggunakan database in-memory (SQLite `:memory:`):
 
 ```bash
 php artisan test
 ```
 
-## Seeder / Demo Data
+Command ini akan mengeksekusi 23 skenario pengujian yang mencakup proses register, login, CRUD, otorisasi kepemilikan produk, pencarian (*searching*), pengurutan (*sorting*), paginasi, dan cek kesehatan sistem (*health check*).
 
-Untuk mempermudah testing dan demo, Anda dapat menjalankan seeder untuk mengisi database dengan sample data.
+---
 
-Contoh command:
+## 🌱 Data Demo / Seeder
+
+Untuk mempermudah demonstrasi dan proses evaluasi, jalankan seeder untuk mengisi database secara otomatis dengan data sampel yang realistis:
+
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-Seeder akan membuat:
-- 2 User (`owner@example.com` dan `user@example.com`) dengan password `password123`.
-- Beberapa sample produk dengan data e-commerce yang realistis terhubung ke user tersebut.
+Seeder ini akan membuat:
+1. **Dua Pengguna Demo**:
+   - Akun Pembuat Produk (Owner): **`owner@example.com`** (Password: `password123`)
+   - Akun Pengguna Lain: **`user@example.com`** (Password: `password123`)
+2. **Beberapa Sampel Produk**: Data produk e-commerce yang realistis yang terhubung ke masing-masing pengguna di atas.
 
-## API Documentation
+---
 
-All API endpoints start with `/api/v1`.
+## 📖 Dokumentasi Endpoint API
 
-### Authentication
+Seluruh endpoint API memiliki prefix `/api/v1`.
 
-- `POST /api/v1/auth/register` - Register a new user.
-- `POST /api/v1/auth/login` - Login and get a JWT token.
+### 🔐 1. Autentikasi (Public)
 
-### Products
+| Metode HTTP | Endpoint | Deskripsi | Parameter Request |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/register` | Mendaftarkan akun pengguna baru | `name`, `email`, `password`, `password_confirmation` |
+| `POST` | `/api/v1/auth/login` | Login dan mendapatkan Token JWT | `email`, `password` |
 
-**Requires `Authorization: Bearer <token>` header.**
+### 📦 2. Manajemen Produk (Memerlukan Header `Authorization: Bearer <token>`)
 
-- `GET /api/v1/products` - List all products (with pagination).
-  - Query parameters: `search`, `sort` (`price`, `name`, `created_at`), `direction` (`asc`, `desc`), `page`.
-- `POST /api/v1/products` - Create a new product.
-- `GET /api/v1/products/{id}` - Get a specific product.
-- `PATCH /api/v1/products/{id}` - Update a product (only owner).
-- `DELETE /api/v1/products/{id}` - Delete a product (only owner).
+| Metode HTTP | Endpoint | Deskripsi | Query Parameters (Opsional) |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/products` | Menampilkan seluruh produk (dengan paginasi) | `search` (nama), `sort` (`price`/`name`/`created_at`), `direction` (`asc`/`desc`), `page` |
+| `POST` | `/api/v1/products` | Membuat produk baru | `name`, `description`, `price` |
+| `GET` | `/api/v1/products/{id}` | Menampilkan detail produk tertentu | - |
+| `PATCH` | `/api/v1/products/{id}` | Memperbarui produk (Hanya Owner) | `name` (opsional), `description` (opsional), `price` (opsional) |
+| `DELETE` | `/api/v1/products/{id}` | Menghapus produk (Hanya Owner) | - |
 
-### System
+### 🏥 3. Sistem Kesehatan (Public)
 
-- `GET /api/v1/health` - Check API health status.
+| Metode HTTP | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `GET` | `/api/v1/health` | Cek status kesehatan sistem API |
 
-## Demo UI
+---
 
-You can view a basic demo of the API in action by navigating to `http://localhost:8000/` in your browser. This will render a Blade view that uses vanilla JavaScript `fetch()` calls to interact with the API endpoints.
+## 🖥️ Demo Visualisasi UI (Bonus)
+
+Sebagai bukti bahwa API berjalan murni dan terstandarisasi dengan multi-client, Anda dapat melihat demo visualisasinya di browser dengan menavigasi ke: **`http://localhost:8000/`**
+
+Halaman ini merupakan halaman Blade ringan yang berinteraksi langsung dengan API menggunakan request `fetch()` asinkronus dan menyimpan token di `localStorage` (sama sekali tidak menggunakan Laravel Session, Cookie, atau CSRF server-side bawaan Web Laravel biasa).
